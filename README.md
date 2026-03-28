@@ -31,3 +31,4 @@ While the competition suggests building a native app, **CropKart** is intentiona
 ## Sample Account Credentials
 * email- test@example.com
 * password- password123
+* if while registering or login error show "Server offline" try login as guest
