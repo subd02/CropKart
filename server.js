@@ -6,7 +6,6 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 
 const app = express();
-// 🔥 RENDER PORT FIX
 const PORT = process.env.PORT || 5000;
 const USERS_FILE = path.join(__dirname, 'users.json');
 
@@ -14,7 +13,7 @@ const USERS_FILE = path.join(__dirname, 'users.json');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'dsubhayu07@gmail.com', // <-- Type your actual Gmail right here
+        user: 'dsubhayu07@gmail.com',
         pass: 'yljiwlwzvfhhcsyu'
     }
 });
@@ -26,9 +25,11 @@ app.use(express.static(path.join(__dirname)));
 const otps = {};
 
 function loadUsers() {
-    if (!fs.existsSync(USERS_FILE)) return [];
-    const data = fs.readFileSync(USERS_FILE);
-    return JSON.parse(data);
+    try {
+        if (!fs.existsSync(USERS_FILE)) return [];
+        const data = fs.readFileSync(USERS_FILE);
+        return JSON.parse(data);
+    } catch (e) { return []; }
 }
 
 function saveUsers(users) {
@@ -39,17 +40,12 @@ function saveUsers(users) {
 app.post('/api/register', (req, res) => {
     const { name, id, pass } = req.body;
     let users = loadUsers();
-
     if (users.find(u => u.id === id)) {
         return res.status(400).json({ message: 'User already exists' });
     }
-
-    const newUser = { name, id, pass };
-    users.push(newUser);
+    users.push({ name, id, pass });
     saveUsers(users);
-
-    console.log(`User registered: ${id}`);
-    res.json({ message: 'Registration successful', name: name });
+    res.json({ message: 'Registration successful!', name: name });
 });
 
 // LOGIN ENDPOINT
@@ -57,16 +53,14 @@ app.post('/api/login', (req, res) => {
     const { id, pass } = req.body;
     const users = loadUsers();
     const user = users.find(u => u.id === id && u.pass === pass);
-
     if (user) {
-        console.log(`User logged in: ${id}`);
         res.json({ message: 'Login successful', user: user });
     } else {
         res.status(401).json({ message: 'Invalid credentials' });
     }
 });
 
-// --- REAL SEND OTP ENDPOINT --- //
+// --- RANDOM OTP SENDING WITH FAILSAFE --- //
 app.post('/api/send-otp', async (req, res) => {
     const { id } = req.body;
     const users = loadUsers();
@@ -76,25 +70,26 @@ app.post('/api/send-otp', async (req, res) => {
         return res.status(404).json({ message: 'User not found. Please register first.' });
     }
 
-    // Generate a 6-digit OTP
+    // 🎲 GENERATE RANDOM 6-DIGIT OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     otps[id] = otp;
 
-    // Build the email
     const mailOptions = {
-        from: 'CropKart Team',
+        from: '"CropKart Team" <dsubhayu07@gmail.com>',
         to: id,
         subject: 'Your CropKart OTP Code',
-        text: `Welcome back, ${user.name}! Your One-Time Password (OTP) is: ${otp}. Do not share this with anyone.`
+        text: `Welcome back, ${user.name}! Your random OTP is: ${otp}`
     };
 
     try {
+        // Try to send the real email
         await transporter.sendMail(mailOptions);
-        console.log(`Real Email OTP sent to ${id}`);
-        res.json({ message: `OTP sent successfully to your email!` });
+        console.log(`Random OTP ${otp} sent to ${id}`);
+        res.json({ message: 'OTP sent to your email!' });
     } catch (error) {
-        console.error("Email Error:", error);
-        res.status(500).json({ message: 'Error sending email. Please try again later.' });
+        console.error("GMAIL BLOCK:", error.message);
+        // ⚠️ FAILSAFE: If email fails, the OTP shows up on your phone screen so you can still log in!
+        res.json({ message: `[DEMO MODE] Your OTP is: ${otp}` });
     }
 });
 
@@ -106,7 +101,6 @@ app.post('/api/verify-otp', (req, res) => {
 
     if (user && otps[id] === otp) {
         delete otps[id];
-        console.log(`User logged in with OTP: ${id}`);
         res.json({ message: 'Login successful', user: user });
     } else {
         res.status(401).json({ message: 'Invalid or expired OTP' });
@@ -114,5 +108,5 @@ app.post('/api/verify-otp', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`CropKart Server running on port ${PORT}`);
+    console.log(`Server live on port ${PORT}`);
 });
