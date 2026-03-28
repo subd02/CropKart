@@ -11,6 +11,9 @@ const USERS_FILE = path.join(__dirname, 'users.json');
 app.use(cors());
 app.use(bodyParser.json());
 
+// Serve the full app (HTML, CSS, JS, images) as static files
+app.use(express.static(path.join(__dirname)));
+
 // Load users from file
 function loadUsers() {
     if (!fs.existsSync(USERS_FILE)) {
