@@ -14,7 +14,8 @@
   "dependencies": {
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
-    "express": "^4.22.1"
+    "express": "^4.22.1",
+    "nodemailer": "^8.0.4"
   },
   "devDependencies": {
     "electron": "^41.1.0"

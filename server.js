@@ -3,27 +3,34 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 const app = express();
-const PORT = 5000;
+// 🔥 RENDER PORT FIX
+const PORT = process.env.PORT || 5000;
 const USERS_FILE = path.join(__dirname, 'users.json');
+
+// --- EMAIL SETUP --- //
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'dsubhayu07@gmail.com', // <-- Type your actual Gmail right here
+        pass: 'yljiwlwzvfhhcsyu'
+    }
+});
 
 app.use(cors());
 app.use(bodyParser.json());
-
-// Serve the full app (HTML, CSS, JS, images) as static files
 app.use(express.static(path.join(__dirname)));
 
-// Load users from file
+const otps = {};
+
 function loadUsers() {
-    if (!fs.existsSync(USERS_FILE)) {
-        return [];
-    }
+    if (!fs.existsSync(USERS_FILE)) return [];
     const data = fs.readFileSync(USERS_FILE);
     return JSON.parse(data);
 }
 
-// Save users to file
 function saveUsers(users) {
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
 }
@@ -49,7 +56,6 @@ app.post('/api/register', (req, res) => {
 app.post('/api/login', (req, res) => {
     const { id, pass } = req.body;
     const users = loadUsers();
-
     const user = users.find(u => u.id === id && u.pass === pass);
 
     if (user) {
@@ -60,6 +66,53 @@ app.post('/api/login', (req, res) => {
     }
 });
 
+// --- REAL SEND OTP ENDPOINT --- //
+app.post('/api/send-otp', async (req, res) => {
+    const { id } = req.body;
+    const users = loadUsers();
+    const user = users.find(u => u.id === id);
+
+    if (!user) {
+        return res.status(404).json({ message: 'User not found. Please register first.' });
+    }
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    otps[id] = otp;
+
+    // Build the email
+    const mailOptions = {
+        from: 'CropKart Team',
+        to: id,
+        subject: 'Your CropKart OTP Code',
+        text: `Welcome back, ${user.name}! Your One-Time Password (OTP) is: ${otp}. Do not share this with anyone.`
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Real Email OTP sent to ${id}`);
+        res.json({ message: `OTP sent successfully to your email!` });
+    } catch (error) {
+        console.error("Email Error:", error);
+        res.status(500).json({ message: 'Error sending email. Please try again later.' });
+    }
+});
+
+// VERIFY OTP ENDPOINT
+app.post('/api/verify-otp', (req, res) => {
+    const { id, otp } = req.body;
+    const users = loadUsers();
+    const user = users.find(u => u.id === id);
+
+    if (user && otps[id] === otp) {
+        delete otps[id];
+        console.log(`User logged in with OTP: ${id}`);
+        res.json({ message: 'Login successful', user: user });
+    } else {
+        res.status(401).json({ message: 'Invalid or expired OTP' });
+    }
+});
+
 app.listen(PORT, () => {
-    console.log(`CropKart Server running on http://localhost:${PORT}`);
+    console.log(`CropKart Server running on port ${PORT}`);
 });
