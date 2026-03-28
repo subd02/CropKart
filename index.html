@@ -73,10 +73,48 @@
                         <input type="password" id="login-pass" required placeholder="Enter password">
                     </div>
                     <button type="submit" class="btn-primary w-100">Login</button>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="#" style="color: var(--primary); font-size: 0.9rem;" onclick="navigate('otp-login')">Forgot Password / Login with OTP?</a>
+                    </div>
                     <div class="login-divider"><span>OR</span></div>
                     <button type="button" class="btn-outline w-100" onclick="handleGuestLogin()">Login as Guest</button>
                     <div class="register-prompt">
                         Don't have an account? <a href="#" onclick="navigate('register')">Register here</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- OTP LOGIN PAGE -->
+        <section id="view-otp-login" class="view">
+            <div class="login-container">
+                <div class="login-brand">
+                    <i class="fas fa-shield-alt fa-3x"></i>
+                    <h1>OTP Login</h1>
+                    <p class="tagline">Quick and Secure Access</p>
+                </div>
+                
+                <!-- Step 1: Send OTP -->
+                <form id="send-otp-form" onsubmit="handleSendOTP(event)">
+                    <div class="input-group">
+                        <label>Phone or Email</label>
+                        <input type="text" id="otp-user" required placeholder="Enter phone/email">
+                    </div>
+                    <button type="submit" id="btn-send-otp" class="btn-primary w-100">Send OTP</button>
+                    <div class="register-prompt" style="margin-top: 20px;">
+                        Remembered your password? <a href="#" onclick="navigate('login')">Login here</a>
+                    </div>
+                </form>
+                
+                <!-- Step 2: Verify OTP (Hidden initially) -->
+                <form id="verify-otp-form" onsubmit="handleVerifyOTP(event)" class="hidden">
+                    <div class="input-group">
+                        <label>Enter 6-digit OTP</label>
+                        <input type="text" id="otp-code" required placeholder="123456" maxlength="6" pattern="\d{6}">
+                    </div>
+                    <button type="submit" class="btn-primary w-100">Verify & Login</button>
+                    <div class="register-prompt" style="margin-top: 20px;">
+                        Didn't receive code? <a href="#" onclick="resetOTPForm()">Change Phone/Email</a>
                     </div>
                 </form>
             </div>

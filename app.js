@@ -251,6 +251,78 @@ function logout() {
     navigate('login');
 }
 
+async function handleSendOTP(e) {
+    e.preventDefault();
+    const user = document.getElementById('otp-user').value;
+    const btn = document.getElementById('btn-send-otp');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    try {
+        const response = await fetch(`${API_URL}/send-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: user })
+        });
+
+        const data = await response.json();
+        btn.disabled = false;
+        btn.textContent = 'Send OTP';
+
+        if (response.ok) {
+            showToast('OTP sent to your email/phone!');
+            document.getElementById('send-otp-form').classList.add('hidden');
+            document.getElementById('verify-otp-form').classList.remove('hidden');
+        } else {
+            showToast(data.message || 'Error sending OTP');
+        }
+    } catch (error) {
+        btn.disabled = false;
+        btn.textContent = 'Send OTP';
+        showToast('Server is currently offline. Please try again later.');
+    }
+}
+
+async function handleVerifyOTP(e) {
+    e.preventDefault();
+    const user = document.getElementById('otp-user').value;
+    const otp = document.getElementById('otp-code').value;
+
+    try {
+        const response = await fetch(`${API_URL}/verify-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: user, otp })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            userState.currentUser = data.user;
+            showToast(`Welcome back, ${data.user.name.split(' ')[0]}!`);
+
+            const profileNameEl = document.querySelector('.profile-info h3');
+            if (profileNameEl) profileNameEl.textContent = data.user.name;
+
+            navigate('home');
+            resetOTPForm();
+        } else {
+            showToast(data.message || 'Invalid OTP');
+        }
+    } catch (error) {
+        showToast('Server is currently offline. Please try again later.');
+    }
+}
+
+function resetOTPForm() {
+    const sendForm = document.getElementById('send-otp-form');
+    const verifyForm = document.getElementById('verify-otp-form');
+    if (sendForm) sendForm.classList.remove('hidden');
+    if (verifyForm) verifyForm.classList.add('hidden');
+    const otpCode = document.getElementById('otp-code');
+    if (otpCode) otpCode.value = '';
+}
+
 let currentSelectedImage = null;
 
 function handlePhotoSelect(e) {
