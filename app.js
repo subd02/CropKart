@@ -137,7 +137,7 @@ function changeLanguage(lang) {
 function navigate(viewId) {
     // Hide all views
     document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-    
+
     // Show target view
     const target = document.getElementById(`view-${viewId}`);
     if (target) {
@@ -169,10 +169,10 @@ let toastTimeout;
 function showToast(message) {
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toast-msg');
-    
+
     toastMsg.textContent = message;
     toast.classList.add('show');
-    
+
     clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => {
         toast.classList.remove('show');
@@ -180,7 +180,7 @@ function showToast(message) {
 }
 
 // --- Auth Handling --- //
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://cropkart-v3bb.onrender.com/api";
 
 async function handleRegister(e) {
     e.preventDefault();
@@ -226,7 +226,7 @@ async function handleLogin(e) {
         if (response.ok) {
             userState.currentUser = data.user;
             showToast(`Welcome back, ${data.user.name.split(' ')[0]}!`);
-            
+
             const profileNameEl = document.querySelector('.profile-info h3');
             if (profileNameEl) profileNameEl.textContent = data.user.name;
 
@@ -305,13 +305,13 @@ function handleSellSubmit(e) {
 function addToCart(index) {
     const item = mockStore[index];
     const existing = userState.cart.find(c => c.name === item.name);
-    
+
     if (existing) {
         existing.quantity++;
     } else {
         userState.cart.push({ ...item, quantity: 1, cartId: Date.now() });
     }
-    
+
     updateCartIcon();
     initApp(); // Refresh store buttons
     if (document.getElementById('view-cart').classList.contains('active')) renderCart();
@@ -321,14 +321,14 @@ function addToCart(index) {
 function decrementCart(index) {
     const item = mockStore[index];
     const cartItemIndex = userState.cart.findIndex(c => c.name === item.name);
-    
+
     if (cartItemIndex > -1) {
         userState.cart[cartItemIndex].quantity--;
         if (userState.cart[cartItemIndex].quantity <= 0) {
             userState.cart.splice(cartItemIndex, 1);
         }
     }
-    
+
     updateCartIcon();
     initApp(); // Refresh store buttons
     if (document.getElementById('view-cart').classList.contains('active')) renderCart();
@@ -447,10 +447,10 @@ function renderMyListings() {
 
     emptyState.classList.add('hidden');
     container.innerHTML = userState.myListings.map(listing => {
-        const imageHtml = listing.image 
+        const imageHtml = listing.image
             ? `<img src="${listing.image}" class="listing-img">`
             : `<div class="listing-placeholder"><i class="fas fa-camera"></i> No Photo</div>`;
-            
+
         return `
             <div class="listing-card">
                 ${imageHtml}
@@ -603,7 +603,7 @@ function initApp() {
 
     // Render Storage
     const storageContainer = document.getElementById('storage-feed');
-    storageContainer.innerHTML = mockStorage.sort((a,b) => a.dist - b.dist).map(store => `
+    storageContainer.innerHTML = mockStorage.sort((a, b) => a.dist - b.dist).map(store => `
         <div class="card">
             <div class="card-content" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
