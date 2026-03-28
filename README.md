@@ -11,7 +11,9 @@ An agriculture-focused platform for managing crop pricing and logistics.
 
 ## ⚙️ How to Run Locally
 1. Clone the repo: `git clone https://github.com/subd02/CropKart.git`
-2. Open `index.html` in your browser, or run `npm install` and `node server.js` to start the backend.
+2. Install dependencies: `npm install`
+3. Start the server: `node server.js`
+4. Open `index.html` in your browser.
 
 ## 📦 Project Structure
 * `/images`: Product assets (Rice, Wheat, Mustard, etc.)
