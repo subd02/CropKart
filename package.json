@@ -1,0 +1,22 @@
+{
+  "name": "anti",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "server": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "express": "^4.22.1"
+  },
+  "devDependencies": {
+    "electron": "^41.1.0"
+  }
+}

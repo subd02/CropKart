@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="A comprehensive Agriculture & Livestock Ecosystem App">
+    <title>CropKart - Agriculture & Livestock Ecosystem</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Link the manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Register the Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js');
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toast-msg">Success!</span></div>
+
+    <!-- App Navigation (Hidden on Login) -->
+    <nav id="navbar" class="hidden">
+        <div class="nav-container">
+            <div class="nav-brand" onclick="navigate('home')">
+                <i class="fas fa-leaf"></i>
+                <div class="brand-text">
+                    <span>CropKart</span>
+                    <small class="tagline">Khet-Set-Go</small>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <button onclick="navigate('sell-portal')" class="btn-sell">
+                    <i class="fas fa-plus"></i> <span data-i18n="nav_sell">SELL NOW</span>
+                </button>
+                <button onclick="navigate('cart')" class="btn-icon" id="cart-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count">0</span>
+                </button>
+                <button onclick="navigate('settings')" class="btn-icon"><i class="fas fa-cog"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- App Container -->
+    <main id="app-content">
+
+        <!-- 1. LOGIN PAGE -->
+        <section id="view-login" class="view active">
+            <div class="login-container">
+                <div class="login-brand">
+                    <i class="fas fa-leaf fa-3x"></i>
+                    <h1>CropKart</h1>
+                    <p class="tagline">Khet-Set-Go</p>
+                    <p data-i18n="login_subtitle">Your Complete Agriculture Ecosystem</p>
+                </div>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <label>Phone or Email</label>
+                        <input type="text" id="login-user" required placeholder="Enter your details">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="login-pass" required placeholder="Enter password">
+                    </div>
+                    <button type="submit" class="btn-primary w-100">Login</button>
+                    <div class="login-divider"><span>OR</span></div>
+                    <button type="button" class="btn-outline w-100" onclick="handleGuestLogin()">Login as Guest</button>
+                    <div class="register-prompt">
+                        Don't have an account? <a href="#" onclick="navigate('register')">Register here</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- REGISTER PAGE -->
+        <section id="view-register" class="view">
+            <div class="login-container">
+                <div class="login-brand">
+                    <i class="fas fa-leaf fa-3x"></i>
+                    <h1>Join CropKart</h1>
+                    <p class="tagline">Create your farmer account</p>
+                </div>
+                <form id="register-form" onsubmit="handleRegister(event)">
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" id="reg-name" required placeholder="Full name">
+                    </div>
+                    <div class="input-group">
+                        <label>Phone or Email</label>
+                        <input type="text" id="reg-user" required placeholder="Enter phone/email">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="reg-pass" required placeholder="Create password">
+                    </div>
+                    <button type="submit" class="btn-primary w-100">Create Account</button>
+                    <div class="register-prompt" style="margin-top: 20px;">
+                        Already have an account? <a href="#" onclick="navigate('login')">Login here</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. HOME PAGE -->
+        <section id="view-home" class="view">
+            <div class="page-header">
+                <h2 data-i18n="home_welcome">Welcome back, Farmer!</h2>
+                <p data-i18n="home_subtitle">Dashboard & Quick Access</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="tile" onclick="navigate('cattle-market')">
+                    <i class="fas fa-cow tile-icon"></i>
+                    <h3 data-i18n="cattle_market">Pashu Mandi</h3>
+                    <p data-i18n="buy_sell">Buy & sell livestock</p>
+                </div>
+                <div class="tile" onclick="navigate('smart-market')">
+                    <i class="fas fa-seedling tile-icon"></i>
+                    <h3 data-i18n="smart_market">Aaj Ka Bhav</h3>
+                    <p data-i18n="crop_ai">Crop AI pricing</p>
+                </div>
+                <div class="tile" onclick="navigate('agri-store')">
+                    <i class="fas fa-store tile-icon"></i>
+                    <h3 data-i18n="agri_store">Sabji Mandi</h3>
+                    <p data-i18n="raw_materials">Raw materials</p>
+                </div>
+                <div class="tile" onclick="navigate('storage-locator')">
+                    <i class="fas fa-snowflake tile-icon"></i>
+                    <h3 data-i18n="storage">Thanda Ghar</h3>
+                    <p data-i18n="cold_storage">Cold storage locator</p>
+                </div>
+            </div>
+
+            <div class="news-section">
+                <h3 data-i18n="local_news"><i class="fas fa-newspaper"></i> Local News & Alerts</h3>
+                <div class="news-list" id="news-container">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. CATTLE MARKETPLACE -->
+        <section id="view-cattle-market" class="view">
+            <div class="page-header has-back">
+                <button onclick="navigate('home')" class="btn-back"><i class="fas fa-arrow-left"></i></button>
+                <h2 data-i18n="cattle_market">Pashu Mandi</h2>
+            </div>
+            <div class="feed-container" id="cattle-feed">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- 4. SMART MARKET -->
+        <section id="view-smart-market" class="view">
+            <div class="page-header has-back">
+                <button onclick="navigate('home')" class="btn-back"><i class="fas fa-arrow-left"></i></button>
+                <h2 data-i18n="smart_market">Aaj Ka Bhav</h2>
+                <p data-i18n="crop_ai">AI-Driven Crop Prices</p>
+            </div>
+            <div class="weather-alert">
+                <i class="fas fa-cloud-rain"></i> Upcoming Monsoon - Prices adjusted based on weather impact logic.
+            </div>
+            <div class="feed-container" id="crop-feed">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- 5. AGRI-STORE -->
+        <section id="view-agri-store" class="view">
+            <div class="page-header has-back">
+                <button onclick="navigate('home')" class="btn-back"><i class="fas fa-arrow-left"></i></button>
+                <h2 data-i18n="agri_store">Sabji Mandi</h2>
+                <p data-i18n="raw_materials">Raw materials & supplies</p>
+            </div>
+            <div class="feed-container grid-feed" id="store-feed">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- 6. STORAGE LOCATOR -->
+        <section id="view-storage-locator" class="view">
+            <div class="page-header has-back">
+                <button onclick="navigate('home')" class="btn-back"><i class="fas fa-arrow-left"></i></button>
+                <h2 data-i18n="storage">Thanda Ghar</h2>
+                <p data-i18n="cold_storage">Nearby Cold Storage Units</p>
+            </div>
+            <div class="feed-container" id="storage-feed">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- 7. SELL PORTAL -->
+        <section id="view-sell-portal" class="view">
+            <div class="page-header has-back">
+                <button onclick="navigate('home')" class="btn-back"><i class="fas fa-arrow-left"></i></button>
+                <h2>List an Item</h2>
+            </div>
+            <div class="form-container">
+                <form id="sell-form" onsubmit="handleSellSubmit(event)">
+                    <div class="input-group">
+                        <label>Item Type</label>
+                        <select class="w-100" id="sell-type">
+                            <option value="crop">Crop</option>
+                            <option value="cattle">Cattle</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Details / Breed</label>
+                        <input type="text" required placeholder="e.g. Holstein Friesian or Wheat">
+                    </div>
+                    <div class="input-group">
+                        <label>Price Estimate</label>
+                        <input type="number" required placeholder="₹">
+                    </div>
+                    <div class="input-group">
+                        <label>Upload Photo (Optional)</label>
+                        <input type="file" id="sell-photo-input" accept="image/*" style="display: none;" onchange="handlePhotoSelect(event)">
+                        <div class="file-upload-mock" onclick="document.getElementById('sell-photo-input').click()">
+                            <div id="photo-preview-container" class="hidden">
+                                <img id="photo-preview" src="" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 10px;">
+                            </div>
+                            <div id="upload-prompt">
+                                <i class="fas fa-camera fa-2x"></i>
+                                <p>Tap to upload</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary w-100">Submit Listing</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 8. SETTINGS PAGE -->
+        <section id="view-settings" class="view">
+            <div class="page-header">
+                <h2 data-i18n="settings_title">Settings</h2>
+                <p data-i18n="settings_subtitle">Manage account & preferences</p>
+            </div>
+
+            <div class="settings-list">
+                <div class="settings-card profile-card">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&q=80&w=100&h=100"
+                        class="mini-avatar">
+                    <div class="profile-info">
+                        <h3>D. Subham</h3>
+                        <p data-i18n="member_since">Member since 2024</p>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h4 data-i18n="pref_lang">Language</h4>
+                    <select id="lang-select" onchange="changeLanguage(this.value)">
+                        <option value="en">English</option>
+                        <option value="hi">Hindi (हिन्दी)</option>
+                        <option value="or">Odia (ଓଡ଼ିଆ)</option>
+                        <option value="bn">Bengali (বাংলা)</option>
+                    </select>
+                </div>
+
+                <div class="settings-group">
+                    <h4 data-i18n="pref_records">My Records</h4>
+                    <div class="menu-item" onclick="navigate('order-history')">
+                        <i class="fas fa-history"></i> <span data-i18n="order_history">Order History</span>
+                    </div>
+                    <div class="menu-item" onclick="navigate('my-listings')">
+                        <i class="fas fa-receipt"></i> <span data-i18n="listing_history">My Listings</span>
+                    </div>
+                </div>
+
+                <button class="btn-outline w-100" onclick="logout()"
+                    style="color: #D32F2F; border-color: #EF9A9A; margin-top: 30px;">
+                    <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout_btn">Logout</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 9. CART PAGE -->
+        <section id="view-cart" class="view">
+            <div class="page-header has-back">
+                <button onclick="navigate('home')" class="btn-back"><i class="fas fa-arrow-left"></i></button>
+                <h2>Your Cart</h2>
+                <p>Review & Checkout</p>
+            </div>
+            <div id="cart-items" class="feed-container">
+                <!-- Populated by JS -->
+            </div>
+            <div id="cart-empty" class="empty-state hidden">
+                <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fas fa-shopping-basket fa-3x" style="margin-bottom: 16px; opacity: 0.5;"></i>
+                    <p>Your cart is empty!</p>
+                    <button class="btn-primary" style="margin-top: 20px;" onclick="navigate('agri-store')">Go
+                        Shopping</button>
+                </div>
+            </div>
+            <div id="cart-summary" class="cart-summary hidden">
+                <div class="summary-row"
+                    style="display: flex; justify-content: space-between; padding: 20px 0; border-top: 2px dashed #E0E0E0; margin-top: 20px;">
+                    <span style="font-weight: 600;">Total Amount:</span>
+                    <span id="cart-total" class="total-price"
+                        style="font-size: 1.4rem; color: var(--clay-warm); font-weight: 700;">₹0</span>
+                </div>
+                <button class="btn-primary w-100" onclick="placeOrder()">Place Order</button>
+            </div>
+        </section>
+
+        <!-- 10. ORDER HISTORY PAGE -->
+        <section id="view-order-history" class="view">
+            <div class="page-header has-back">
+                <button onclick="navigate('settings')" class="btn-back"><i class="fas fa-arrow-left"></i></button>
+                <h2>Order History</h2>
+            </div>
+            <div id="order-history-feed" class="feed-container">
+                <!-- Populated by JS -->
+            </div>
+            <div id="history-empty" class="empty-state hidden">
+                <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fas fa-history fa-3x" style="margin-bottom: 16px; opacity: 0.5;"></i>
+                    <p>Nothing ordered yet!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11. MY LISTINGS PAGE -->
+        <section id="view-my-listings" class="view">
+            <div class="page-header has-back">
+                <button onclick="navigate('settings')" class="btn-back"><i class="fas fa-arrow-left"></i></button>
+                <h2>My Listings</h2>
+            </div>
+            <div id="my-listings-feed" class="feed-container">
+                <!-- Populated by JS -->
+            </div>
+            <div id="listings-empty" class="empty-state hidden">
+                <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fas fa-receipt fa-3x" style="margin-bottom: 16px; opacity: 0.5;"></i>
+                    <p>No listings found!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js?v=2.0"></script>
+</body>
+
+</html>
