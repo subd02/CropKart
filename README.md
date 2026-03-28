@@ -25,7 +25,7 @@ While the competition suggests building a native app, **CropKart** is intentiona
 
 ## 📦 Project Structure
 * `/images`: Product assets (Rice, Wheat, Mustard, etc.)
-* `PriceAndDistanceLogic`: Core algorithms implemented in multiple languages.
+* `PriceAndDistanceLogic`: Core algorithms implemented in multiple languages for more prescision.
 * `vercel.json`: Configuration for seamless Vercel hosting.
 
 ## Sample Account Credentials
