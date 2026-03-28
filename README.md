@@ -2,7 +2,7 @@
 An agriculture-focused platform for managing crop pricing and logistics.
 
 🚀 Live Demo
-**Link**: https://cropcart-echelon.vercel.app/
+**Link**: https://cropcart-echelon.vercel.app
 
 ## 🌍 Strategic Design: Why a Web-First Approach?
 
