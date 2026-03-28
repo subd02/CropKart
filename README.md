@@ -27,3 +27,7 @@ While the competition suggests building a native app, **CropKart** is intentiona
 * `/images`: Product assets (Rice, Wheat, Mustard, etc.)
 * `PriceAndDistanceLogic`: Core algorithms implemented in multiple languages.
 * `vercel.json`: Configuration for seamless Vercel hosting.
+
+## Sample Account Credentials
+* email- test@example.com
+* password- password123
